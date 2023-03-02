@@ -15,9 +15,11 @@ struct FeedResponse {
 }
 
 struct PublishActionRequest {
-    1:string token
-    2:binary data // 视频数据
-    3:string title // 视频标题
+    1:i64 user_id
+    2:i64 video_id
+    3:string play_url // 播放地址
+    4:string cover_url // 封面地址
+    5:string title // 视频标题
 }
 
 struct PublishActionResponse {
