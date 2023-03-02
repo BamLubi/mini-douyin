@@ -32,10 +32,9 @@ func main() {
 		apiRouter.POST("/user/login/", middleware.Jwt.LoginHandler)                            // 登录接口 - user
 		apiRouter.GET("/user/", middleware.Jwt.MiddlewareFunc(), handlers.UserInfo)            // 用户信息 - user
 		apiRouter.GET("/publish/list/", middleware.Jwt.MiddlewareFunc(), handlers.PublishList) // 发布列表 - user
+		apiRouter.POST("/publish/action/", handlers.Publish)                                   // 视频投稿 - video
+		apiRouter.GET("/feed/", handlers.Feed)                                                 // 视频流  - video
 	}
-
-	// apiRouter.POST("/publish/action/", controller.Publish)  // 视频投稿 - video
-	// apiRouter.GET("/feed/", controller.Feed)                // 视频流接口 - video
 
 	// // extra apis - I
 	// apiRouter.POST("/favorite/action/", controller.FavoriteAction) // 赞操作
