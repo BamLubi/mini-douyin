@@ -269,7 +269,7 @@ func (p *FeedRequest) Field2DeepEqual(src *int64) bool {
 type FeedResponse struct {
 	StatusCode int32         `thrift:"status_code,1" frugal:"1,default,i32" json:"status_code"`
 	StatusMsg  *string       `thrift:"status_msg,2,optional" frugal:"2,optional,string" json:"status_msg,omitempty"`
-	VideoLis   []*base.Video `thrift:"video_lis,3" frugal:"3,default,list<base.Video>" json:"video_lis"`
+	VideoList  []*base.Video `thrift:"video_list,3" frugal:"3,default,list<base.Video>" json:"video_list"`
 	NextTime   *int64        `thrift:"next_time,4,optional" frugal:"4,optional,i64" json:"next_time,omitempty"`
 }
 
@@ -294,8 +294,8 @@ func (p *FeedResponse) GetStatusMsg() (v string) {
 	return *p.StatusMsg
 }
 
-func (p *FeedResponse) GetVideoLis() (v []*base.Video) {
-	return p.VideoLis
+func (p *FeedResponse) GetVideoList() (v []*base.Video) {
+	return p.VideoList
 }
 
 var FeedResponse_NextTime_DEFAULT int64
@@ -312,8 +312,8 @@ func (p *FeedResponse) SetStatusCode(val int32) {
 func (p *FeedResponse) SetStatusMsg(val *string) {
 	p.StatusMsg = val
 }
-func (p *FeedResponse) SetVideoLis(val []*base.Video) {
-	p.VideoLis = val
+func (p *FeedResponse) SetVideoList(val []*base.Video) {
+	p.VideoList = val
 }
 func (p *FeedResponse) SetNextTime(val *int64) {
 	p.NextTime = val
@@ -322,7 +322,7 @@ func (p *FeedResponse) SetNextTime(val *int64) {
 var fieldIDToName_FeedResponse = map[int16]string{
 	1: "status_code",
 	2: "status_msg",
-	3: "video_lis",
+	3: "video_list",
 	4: "next_time",
 }
 
@@ -446,14 +446,14 @@ func (p *FeedResponse) ReadField3(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.VideoLis = make([]*base.Video, 0, size)
+	p.VideoList = make([]*base.Video, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewVideo()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.VideoLis = append(p.VideoLis, _elem)
+		p.VideoList = append(p.VideoList, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -548,13 +548,13 @@ WriteFieldEndError:
 }
 
 func (p *FeedResponse) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("video_lis", thrift.LIST, 3); err != nil {
+	if err = oprot.WriteFieldBegin("video_list", thrift.LIST, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.VideoLis)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.VideoList)); err != nil {
 		return err
 	}
-	for _, v := range p.VideoLis {
+	for _, v := range p.VideoList {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}
@@ -610,7 +610,7 @@ func (p *FeedResponse) DeepEqual(ano *FeedResponse) bool {
 	if !p.Field2DeepEqual(ano.StatusMsg) {
 		return false
 	}
-	if !p.Field3DeepEqual(ano.VideoLis) {
+	if !p.Field3DeepEqual(ano.VideoList) {
 		return false
 	}
 	if !p.Field4DeepEqual(ano.NextTime) {
@@ -640,10 +640,10 @@ func (p *FeedResponse) Field2DeepEqual(src *string) bool {
 }
 func (p *FeedResponse) Field3DeepEqual(src []*base.Video) bool {
 
-	if len(p.VideoLis) != len(src) {
+	if len(p.VideoList) != len(src) {
 		return false
 	}
-	for i, v := range p.VideoLis {
+	for i, v := range p.VideoList {
 		_src := src[i]
 		if !v.DeepEqual(_src) {
 			return false

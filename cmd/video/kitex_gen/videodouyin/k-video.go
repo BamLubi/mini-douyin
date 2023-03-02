@@ -357,7 +357,7 @@ func (p *FeedResponse) FastReadField3(buf []byte) (int, error) {
 	if err != nil {
 		return offset, err
 	}
-	p.VideoLis = make([]*base.Video, 0, size)
+	p.VideoList = make([]*base.Video, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewVideo()
 		if l, err := _elem.FastRead(buf[offset:]); err != nil {
@@ -366,7 +366,7 @@ func (p *FeedResponse) FastReadField3(buf []byte) (int, error) {
 			offset += l
 		}
 
-		p.VideoLis = append(p.VideoLis, _elem)
+		p.VideoList = append(p.VideoList, _elem)
 	}
 	if l, err := bthrift.Binary.ReadListEnd(buf[offset:]); err != nil {
 		return offset, err
@@ -444,11 +444,11 @@ func (p *FeedResponse) fastWriteField2(buf []byte, binaryWriter bthrift.BinaryWr
 
 func (p *FeedResponse) fastWriteField3(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "video_lis", thrift.LIST, 3)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "video_list", thrift.LIST, 3)
 	listBeginOffset := offset
 	offset += bthrift.Binary.ListBeginLength(thrift.STRUCT, 0)
 	var length int
-	for _, v := range p.VideoLis {
+	for _, v := range p.VideoList {
 		length++
 		offset += v.FastWriteNocopy(buf[offset:], binaryWriter)
 	}
@@ -491,9 +491,9 @@ func (p *FeedResponse) field2Length() int {
 
 func (p *FeedResponse) field3Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("video_lis", thrift.LIST, 3)
-	l += bthrift.Binary.ListBeginLength(thrift.STRUCT, len(p.VideoLis))
-	for _, v := range p.VideoLis {
+	l += bthrift.Binary.FieldBeginLength("video_list", thrift.LIST, 3)
+	l += bthrift.Binary.ListBeginLength(thrift.STRUCT, len(p.VideoList))
+	for _, v := range p.VideoList {
 		l += v.BLength()
 	}
 	l += bthrift.Binary.ListEndLength()

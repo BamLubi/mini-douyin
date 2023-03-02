@@ -10,7 +10,7 @@ struct FeedRequest {
 struct FeedResponse {
     1:i32 status_code 
     2:optional string status_msg
-    3:list<base.Video> video_lis // 视频列表
+    3:list<base.Video> video_list // 视频列表
     4:optional i64 next_time // 本次返回的视频中，发布最早的时间，作为下次请求时的latest_time
 }
 
