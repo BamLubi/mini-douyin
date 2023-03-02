@@ -36,9 +36,9 @@ func initSharedTable(num int) {
 	for i := 0; i < num; i++ {
 		table := fmt.Sprintf("%s_%d", tableName, i)
 		DB.Exec(`CREATE TABLE IF NOT EXISTS ` + table + ` (
-			id int(32) PRIMARY KEY,
-			user_id int(32),
-			target_id int(32),
+			id bigint PRIMARY KEY,
+			user_id bigint,
+			target_id bigint,
 			is_active int(1)
 		)`)
 	}
