@@ -5,6 +5,7 @@ import (
 	"mini-douyin/cmd/api/kitex_gen/userdouyin"
 	"mini-douyin/cmd/api/middleware"
 	"mini-douyin/cmd/api/rpc"
+	"strconv"
 
 	config "mini-douyin/pkg/configs"
 
@@ -39,7 +40,14 @@ func UserRegister(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
-
+	id, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	req := &userdouyin.UserInfoRequest{UserId: id, Token: c.Query("token")}
+	resp, err := rpc.UserClient.UserInfo(context.Background(), req)
+	if err != nil {
+		config.Logger.Error(err.Error())
+		return
+	}
+	c.JSON(200, resp)
 }
 
 func PublishList(c *gin.Context) {
