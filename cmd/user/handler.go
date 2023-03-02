@@ -53,7 +53,6 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *userdouyin.UserLog
 
 // UserInfo implements the UserServiceImpl interface.
 func (s *UserServiceImpl) UserInfo(ctx context.Context, req *userdouyin.UserInfoRequest) (resp *userdouyin.UserInfoResponse, err error) {
-	// TODO: Your code here...
 	var userinfo entity.UserInfo
 	config.DB.Model(&entity.UserInfo{}).Where("id = ?", req.UserId).First(&userinfo)
 	user := EntityUserInfo2IDLUser(&userinfo)
