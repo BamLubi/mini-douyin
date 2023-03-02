@@ -8,6 +8,8 @@ import (
 	"mini-douyin/pkg/consts"
 	"time"
 
+	config "mini-douyin/pkg/configs"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
@@ -77,4 +79,13 @@ func ParseUserIdFromTokenString(token_str string) int64 {
 	claims := jwt.ExtractClaimsFromToken(token)
 	userId := int64(claims[consts.IdentityKey].(float64))
 	return userId
+}
+
+func GenTokenStringFromUserId(userId int64) (string, error) {
+	token, _, err := Jwt.TokenGenerator(userId)
+	if err != nil {
+		config.Logger.Error(err.Error())
+		return "", err
+	}
+	return token, nil
 }

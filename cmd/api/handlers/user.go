@@ -29,9 +29,9 @@ func UserRegister(c *gin.Context) {
 	}
 	// 根据用户的id生成相应的token
 	if resp.StatusCode == 0 {
-		token, _, err := middleware.Jwt.TokenGenerator(resp.UserId)
+		token, err := middleware.GenTokenStringFromUserId(resp.UserId)
 		if err != nil {
-			config.Logger.Error(err.Error())
+			c.JSON(400, resp)
 			return
 		}
 		resp.Token = token
