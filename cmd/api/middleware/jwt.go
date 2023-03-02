@@ -51,13 +51,10 @@ func InitJWT() {
 			return jwt.MapClaims{}
 		},
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
-			t, _ := Jwt.ParseTokenString(token)
-			claims := jwt.ExtractClaimsFromToken(t)
-
 			resp := new(userdouyin.UserLoginResponse)
 			resp.StatusCode = 0
 			resp.Token = token
-			resp.UserId = int64(claims[consts.IdentityKey].(float64))
+			resp.UserId = ParseUserIdFromTokenString(token)
 			log.Println("Login:", resp.UserId, resp.Token)
 			c.JSON(200, resp)
 		},
@@ -73,4 +70,11 @@ func InitJWT() {
 	})
 
 	Jwt = JwtMiddleware
+}
+
+func ParseUserIdFromTokenString(token_str string) int64 {
+	token, _ := Jwt.ParseTokenString(token_str)
+	claims := jwt.ExtractClaimsFromToken(token)
+	userId := int64(claims[consts.IdentityKey].(float64))
+	return userId
 }
