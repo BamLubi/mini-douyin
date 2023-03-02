@@ -25,7 +25,7 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *userdouyin.User
 	// 启用事务创建user数据和userinfo数据
 	err = RegisterTransaction(user, userinfo)
 	if err != nil {
-		config.Logger.Error("UserRegister" + err.Error())
+		config.Logger.Error("UserRegister: " + err.Error())
 
 		err_msg := err.Error()
 		resp = &userdouyin.UserRegisterResponse{StatusCode: 1, StatusMsg: &err_msg, UserId: user.Id, Token: ""}

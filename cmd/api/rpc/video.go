@@ -11,7 +11,7 @@ import (
 var VideoClient videoservice.Client
 
 func initVideo() {
-	c, err := videoservice.NewClient(consts.VideoServiceName, client.WithHostPorts("0.0.0.0:8888"))
+	c, err := videoservice.NewClient(consts.VideoServiceName, client.WithHostPorts("0.0.0.0:9999"))
 	if err != nil {
 		panic(err)
 	}

@@ -39,6 +39,7 @@ func UserRegister(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
+// 用户个人信息
 func UserInfo(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	req := &userdouyin.UserInfoRequest{UserId: id, Token: c.Query("token")}
