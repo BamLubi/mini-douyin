@@ -2,13 +2,20 @@ version: '3'
 
 services:
   mysql:
-    image: 'mysql:latest'
+    image: 'mysql:5.7'
+    container_name: mini-douyin-mysql
+    restart: always
     volumes:
       - ./pkg/configs/sql:/docker-entrypoint-initdb.d
     ports:
       - 3306:3306
     environment:
-      - MYSQL_DATABASE=gorm
-      - MYSQL_USER=mini-douyin
-      - MYSQL_PASSWORD=mini-douyin
-      - MYSQL_RANDOM_ROOT_PASSWORD="yes"
+      - MYSQL_DATABASE=mini_douyin
+      - MYSQL_ROOT_PASSWORD=mini-douyin
+      - TZ=Asia/Shanghai
+  redis:
+    image: 'redis:latest'
+    container_name: mini-douyin-redis
+    restart: always
+    ports:
+      - 6379:6379
