@@ -20,9 +20,10 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *userdouyin.User
 	hash := utils.Encrypt(password)
 
 	user := &entity.User{Id: utils.IdGen(), Username: req.Username, Salt: salt, Hash: hash}
+	userinfo := &entity.UserInfo{Id: user.Id, Name: user.Username, IsFollow: true}
 
-	// 写入数据库
-	err = config.DB.Create(&user).Error
+	// 启用事务创建user数据和userinfo数据
+	err = RegisterTransaction(user, userinfo)
 	if err != nil {
 		config.Logger.Error("UserRegister" + err.Error())
 
@@ -38,7 +39,6 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *userdouyin.User
 
 // UserLogin implements the UserServiceImpl interface.
 func (s *UserServiceImpl) UserLogin(ctx context.Context, req *userdouyin.UserLoginRequest) (resp *userdouyin.UserLoginResponse, err error) {
-	// TODO: Your code here...
 	// 从数据库中获取用户的盐值和hash，匹配是否一致，
 	var user entity.User
 	config.DB.Model(&entity.User{}).Where("username = ?", req.Username).First(&user)
@@ -54,6 +54,10 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *userdouyin.UserLog
 // UserInfo implements the UserServiceImpl interface.
 func (s *UserServiceImpl) UserInfo(ctx context.Context, req *userdouyin.UserInfoRequest) (resp *userdouyin.UserInfoResponse, err error) {
 	// TODO: Your code here...
+	var userinfo entity.UserInfo
+	config.DB.Model(&entity.UserInfo{}).Where("id = ?", req.UserId).First(&userinfo)
+	user := EntityUserInfo2IDLUser(&userinfo)
+	resp = &userdouyin.UserInfoResponse{StatusCode: 0, User: user}
 	return
 }
 
