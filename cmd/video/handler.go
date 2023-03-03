@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"mini-douyin/cmd/video/kitex_gen/base"
 	videodouyin "mini-douyin/cmd/video/kitex_gen/videodouyin"
 	config "mini-douyin/pkg/configs"
 	"mini-douyin/pkg/entity"
@@ -14,39 +13,34 @@ type VideoServiceImpl struct{}
 
 // Feed implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedRequest) (resp *videodouyin.FeedResponse, err error) {
-	// TODO: Your code here...
-	var followCount int64 = 0
-	var followerCount int64 = 0
-	var DemoUser = base.User{
-		Id:            1,
-		Name:          "TestUser",
-		FollowCount:   &followCount,
-		FollowerCount: &followerCount,
-		IsFollow:      false,
+	// 最多 30 个视频，时间倒序，返回最小时间
+	// video.create_time < latestTime
+	var videoList []*entity.Video
+	err = config.DB.Table("videoinfo").Preload("User").Where("videoinfo.create_time < ?", req.LatestTime).Order("videoinfo.create_time DESC").Limit(30).Find(&videoList).Error
+	if err != nil {
+		err_msg := "Feed DB error"
+		resp = &videodouyin.FeedResponse{StatusCode: 1, StatusMsg: &err_msg}
+		return
 	}
-	var DemoVideos = []*base.Video{
-		{
-			Id:            1,
-			Author:        &DemoUser,
-			PlayUrl:       "https://www.w3schools.com/html/movie.mp4",
-			CoverUrl:      "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg",
-			FavoriteCount: 0,
-			CommentCount:  0,
-			IsFavorite:    false,
-		},
+	videoListIDL := EntityVideList2IDLVideoList(videoList)
+	if len(videoListIDL) == 0 {
+		resp = &videodouyin.FeedResponse{StatusCode: 0}
+		return
 	}
-	resp = &videodouyin.FeedResponse{StatusCode: 0, VideoList: DemoVideos, NextTime: req.LatestTime}
+	var lastTime int64 = videoListIDL[len(videoListIDL)-1].CreateTime
+	resp = &videodouyin.FeedResponse{StatusCode: 0, VideoList: videoListIDL, NextTime: &lastTime}
+
 	return
 }
 
 // PublishAction implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) PublishAction(ctx context.Context, req *videodouyin.PublishActionRequest) (resp *videodouyin.PublishActionResponse, err error) {
 	videoInfo := &entity.VideoInfo{
-		Id:       req.VideoId,
-		UserId:   req.UserId,
-		PlayUrl:  req.PlayUrl,
-		CoverUrl: req.CoverUrl,
-		Title:    req.Title,
+		Id:         req.VideoId,
+		UserId:     req.UserId,
+		PlayUrl:    req.PlayUrl,
+		CoverUrl:   req.CoverUrl,
+		Title:      req.Title,
 		CreateTime: time.Now().UnixNano() / int64(time.Millisecond),
 	}
 
