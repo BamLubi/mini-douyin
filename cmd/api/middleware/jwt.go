@@ -89,3 +89,10 @@ func GenTokenStringFromUserId(userId int64) (string, error) {
 	}
 	return token, nil
 }
+
+func CheckUserId2TokenString(userId int64, token_str string) error {
+	if ParseUserIdFromTokenString(token_str) != userId {
+		return errors.New("id is not match token")
+	}
+	return nil
+}

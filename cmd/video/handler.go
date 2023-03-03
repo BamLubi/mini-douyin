@@ -6,6 +6,7 @@ import (
 	videodouyin "mini-douyin/cmd/video/kitex_gen/videodouyin"
 	config "mini-douyin/pkg/configs"
 	"mini-douyin/pkg/entity"
+	"time"
 )
 
 // VideoServiceImpl implements the last service interface defined in the IDL.
@@ -40,13 +41,14 @@ func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedReques
 
 // PublishAction implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) PublishAction(ctx context.Context, req *videodouyin.PublishActionRequest) (resp *videodouyin.PublishActionResponse, err error) {
-	// TODO: Your code here...
-	var videoInfo entity.VideoInfo
-	videoInfo.Id = req.VideoId
-	videoInfo.UserId = req.UserId
-	videoInfo.CoverUrl = req.CoverUrl
-	videoInfo.PlayUrl = req.PlayUrl
-	videoInfo.Title = req.Title
+	videoInfo := &entity.VideoInfo{
+		Id:       req.VideoId,
+		UserId:   req.UserId,
+		PlayUrl:  req.PlayUrl,
+		CoverUrl: req.CoverUrl,
+		Title:    req.Title,
+		CreateTime: time.Now().UnixNano() / int64(time.Millisecond),
+	}
 
 	err = config.DB.Create(&videoInfo).Error
 	if err != nil {

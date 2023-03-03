@@ -1,8 +1,8 @@
 package entity
 
-type VideoInfo struct {
-	Id            int64  `json:"id" gorm:"primary_key"`           // id
-	UserId        int64  `json:"user_id"`                         // 作者id
+type Video struct {
+	Id            int64  `json:"id" gorm:"primary_key"` // id
+	UserId        int64  `json:"user_id"`
 	PlayUrl       string `json:"play_url"`                        // 播放地址
 	CoverUrl      string `json:"cover_url"`                       // 封面地址
 	FavoriteCount int64  `gorm:"default:0" json:"favorite_count"` // 点赞总数
@@ -10,8 +10,10 @@ type VideoInfo struct {
 	IsFavorite    bool   `gorm:"default:0" json:"is_favorite"`    // true-已点赞，false-未点赞
 	Title         string `json:"title"`                           // 标题
 	CreateTime    int64  `json:"create_time"`                     // 创建时间
+
+	User UserInfo `json:"author" gorm:"foreignKey:Id;references:UserId;"` // 作者
 }
 
-func (vi VideoInfo) TableName() string {
+func (v Video) TableName() string {
 	return "videoinfo"
 }

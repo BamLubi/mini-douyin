@@ -17,8 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// /douyin/feed?latest_time=1677758442403&token=eyJhbGci...
-
 func Feed(c *gin.Context) {
 	// 提取时间
 	latest_time_str := c.Query("latest_time")

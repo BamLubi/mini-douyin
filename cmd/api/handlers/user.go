@@ -42,7 +42,14 @@ func UserRegister(c *gin.Context) {
 // 用户个人信息
 func UserInfo(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	req := &userdouyin.UserInfoRequest{UserId: id, Token: c.Query("token")}
+	// 校验id与token解析id是否一致
+	if err := middleware.CheckUserId2TokenString(id, c.Query("token")); err != nil {
+		config.Logger.Error(err.Error())
+		c.JSON(400, &userdouyin.UserInfoResponse{StatusCode: 1})
+		return
+	}
+	// 发送请求
+	req := &userdouyin.UserInfoRequest{UserId: id}
 	resp, err := rpc.UserClient.UserInfo(context.Background(), req)
 	if err != nil {
 		config.Logger.Error(err.Error())
@@ -52,5 +59,18 @@ func UserInfo(c *gin.Context) {
 }
 
 func PublishList(c *gin.Context) {
-
+	id, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	// 校验id与token解析id是否一致
+	if err := middleware.CheckUserId2TokenString(id, c.Query("token")); err != nil {
+		config.Logger.Error(err.Error())
+		c.JSON(400, &userdouyin.UserInfoResponse{StatusCode: 1})
+		return
+	}
+	req := &userdouyin.PublishListRequest{UserId: id}
+	resp, err := rpc.UserClient.PublishList(context.Background(), req)
+	if err != nil {
+		config.Logger.Error(err.Error())
+		return
+	}
+	c.JSON(200, resp)
 }

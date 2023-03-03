@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"mini-douyin/cmd/user/kitex_gen/base"
 	userdouyin "mini-douyin/cmd/user/kitex_gen/userdouyin"
 	config "mini-douyin/pkg/configs"
 	"mini-douyin/pkg/entity"
@@ -29,12 +30,12 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *userdouyin.User
 
 		err_msg := err.Error()
 		resp = &userdouyin.UserRegisterResponse{StatusCode: 1, StatusMsg: &err_msg, UserId: user.Id, Token: ""}
-		return resp, err
+		return
 	}
 
 	// 返回结果
 	resp = &userdouyin.UserRegisterResponse{StatusCode: 0, UserId: user.Id, Token: ""}
-	return resp, nil
+	return
 }
 
 // UserLogin implements the UserServiceImpl interface.
@@ -46,6 +47,7 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *userdouyin.UserLog
 		err_msg := "password wrong"
 		resp = &userdouyin.UserLoginResponse{StatusCode: 1, StatusMsg: &err_msg, UserId: -1, Token: ""}
 		err = errors.New("password wrong")
+		return
 	}
 	resp = &userdouyin.UserLoginResponse{StatusCode: 0, UserId: user.Id, Token: ""}
 	return
@@ -53,15 +55,27 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *userdouyin.UserLog
 
 // UserInfo implements the UserServiceImpl interface.
 func (s *UserServiceImpl) UserInfo(ctx context.Context, req *userdouyin.UserInfoRequest) (resp *userdouyin.UserInfoResponse, err error) {
-	var userinfo entity.UserInfo
-	config.DB.Model(&entity.UserInfo{}).Where("id = ?", req.UserId).First(&userinfo)
-	user := EntityUserInfo2IDLUser(&userinfo)
-	resp = &userdouyin.UserInfoResponse{StatusCode: 0, User: user}
+	var userinfo base.User
+	err = config.DB.Table("userinfo").Where("id = ?", req.UserId).First(&userinfo).Error
+	if err != nil {
+		err_msg := "UserInfo DB error"
+		resp = &userdouyin.UserInfoResponse{StatusCode: 1, StatusMsg: &err_msg}
+		return
+	}
+	resp = &userdouyin.UserInfoResponse{StatusCode: 0, User: &userinfo}
 	return
 }
 
 // PublishList implements the UserServiceImpl interface.
 func (s *UserServiceImpl) PublishList(ctx context.Context, req *userdouyin.PublishListRequest) (resp *userdouyin.PublishListResponse, err error) {
-	// TODO: Your code here...
+	var videoList []*entity.Video
+	err = config.DB.Table("videoinfo").Preload("User").Where("videoinfo.user_id = ?", req.UserId).Find(&videoList).Error
+	if err != nil {
+		err_msg := "PublishList DB error"
+		resp = &userdouyin.PublishListResponse{StatusCode: 1, StatusMsg: &err_msg}
+		return
+	}
+	videoListIDL := EntityVideList2IDLVideoList(videoList)
+	resp = &userdouyin.PublishListResponse{StatusCode: 0, VideoList: videoListIDL}
 	return
 }
