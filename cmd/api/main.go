@@ -28,12 +28,12 @@ func main() {
 
 	apiRouter := r.Group("/douyin")
 	{
-		apiRouter.POST("/user/register/", handlers.UserRegister)                               // 注册接口 - user
-		apiRouter.POST("/user/login/", middleware.Jwt.LoginHandler)                            // 登录接口 - user
-		apiRouter.GET("/user/", middleware.Jwt.MiddlewareFunc(), handlers.UserInfo)            // 用户信息 - user
-		apiRouter.GET("/publish/list/", middleware.Jwt.MiddlewareFunc(), handlers.PublishList) // 发布列表 - user
-		apiRouter.POST("/publish/action/", handlers.PublishAction)                             // 视频投稿 - video
-		apiRouter.GET("/feed/", handlers.Feed)                                                 // 视频流  - video
+		apiRouter.POST("/user/register/", handlers.UserRegister)                                    // 注册接口 - user
+		apiRouter.POST("/user/login/", middleware.Jwt.LoginHandler)                                 // 登录接口 - user
+		apiRouter.GET("/user/", middleware.Jwt.MiddlewareFunc(), handlers.UserInfo)                 // 用户信息 - user
+		apiRouter.GET("/publish/list/", middleware.Jwt.MiddlewareFunc(), handlers.PublishList)      // 发布列表 - user
+		apiRouter.POST("/publish/action/", middleware.Jwt.MiddlewareFunc(), handlers.PublishAction) // 视频投稿 - video
+		apiRouter.GET("/feed/", handlers.Feed)                                                      // 视频流  - video
 	}
 
 	// // extra apis - I
