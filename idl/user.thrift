@@ -28,7 +28,6 @@ struct UserLoginResponse {
 
 struct UserInfoRequest {
     1:i64 user_id
-    2:string token
 }
 
 struct UserInfoResponse {
@@ -39,7 +38,6 @@ struct UserInfoResponse {
 
 struct PublishListRequest {
     1:i64 user_id
-    2:string token
 }
 
 struct PublishListResponse {
