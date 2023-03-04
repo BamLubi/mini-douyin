@@ -27,19 +27,34 @@ func initDB() {
 		NumberOfShards: sharedCount,
 		// PrimaryKeyGenerator: sharding.PKSnowflake,
 	}, "relations"))
+	DB.Use(sharding.Register(sharding.Config{
+		ShardingKey:    "user_id",
+		NumberOfShards: sharedCount,
+		// PrimaryKeyGenerator: sharding.PKSnowflake,
+	}, "relations"))
 
 	Logger.Info("Mysql Connect and Init Shared Table Success.")
 }
 
 func initSharedTable(num int) {
-	tableName := "relations"
+	// relations表
 	for i := 0; i < num; i++ {
-		table := fmt.Sprintf("%s_%d", tableName, i)
+		table := fmt.Sprintf("%s_%d", "relations", i)
 		DB.Exec(`CREATE TABLE IF NOT EXISTS ` + table + ` (
 			id bigint PRIMARY KEY,
 			user_id bigint,
 			target_id bigint,
 			is_active int(1)
+		)`)
+	}
+	// comments表
+	for i := 0; i < num; i++ {
+		table := fmt.Sprintf("%s_%d", "comments", i)
+		DB.Exec(`CREATE TABLE IF NOT EXISTS ` + table + ` (
+			id bigint PRIMARY KEY,
+			user_id bigint,
+			content varchar,
+			create_date varchar
 		)`)
 	}
 }
