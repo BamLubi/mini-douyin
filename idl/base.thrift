@@ -23,3 +23,10 @@ struct Video {
     8:string title // 视频标题
     9:i64 create_time // 创建时间
 }
+
+struct Comment {
+    1:i64 id
+    2:User user
+    3:string content
+    4:string create_date // 评论发布日期,mm-dd
+}

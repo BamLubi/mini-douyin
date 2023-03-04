@@ -46,9 +46,20 @@ struct PublishListResponse {
     3:list<base.Video> video_list // 用户发布的视频列表
 }
 
+struct FavoriteListRequest {
+    1:i64 user_id
+}
+
+struct FavoriteListResponse {
+    1:i32 status_code
+    2:optional string status_msg
+    3:list<base.Video> video_list
+}
+
 service UserService {
     UserRegisterResponse UserRegister(1:UserRegisterRequest req)
     UserLoginResponse UserLogin(1:UserLoginRequest req)
     UserInfoResponse UserInfo(1:UserInfoRequest req)
     PublishListResponse PublishList(1:PublishListRequest req)
+    FavoriteListResponse FavoriteList(1:FavoriteListRequest req)
 }
