@@ -3,27 +3,54 @@ package main
 import (
 	videodouyin "mini-douyin/cmd/video/kitex_gen/videodouyin/videoservice"
 	config "mini-douyin/pkg/configs"
+	"mini-douyin/pkg/consts"
+	"mini-douyin/pkg/utils"
 	"net"
+	"strconv"
 
 	"github.com/cloudwego/kitex/server"
 )
 
-func Init() {
+var Ip string
+var Port uint64
+
+func Init() (err error) {
 	config.InitConfigs("/root/mini-douyin/logs/video-rpc.log", "debug")
+
+	// 获取本机外网ip和端口
+	Ip, err = utils.GetIp()
+	if err != nil {
+		config.Logger.Error(err.Error())
+		return
+	}
+	Port, err = utils.GetFreePort()
+	if err != nil {
+		config.Logger.Error(err.Error())
+		return
+	}
+	// 服务中心注册服务
+	err = config.NacosRegister(Ip, Port, consts.VideoServiceName)
+	if err != nil {
+		config.Logger.Error(err.Error())
+		return
+	}
+	return err
 }
 
 func main() {
-	Init()
+	var err error
+	err = Init()
+	if err != nil {
+		panic(err)
+	}
 
-	addr, _ := net.ResolveTCPAddr("tcp", "0.0.0.0:9999")
+	addr, _ := net.ResolveTCPAddr("tcp", Ip+":"+strconv.Itoa(int(Port)))
 	var opts []server.Option
 	opts = append(opts, server.WithServiceAddr(addr))
-
 	svr := videodouyin.NewServer(new(VideoServiceImpl), opts...)
-
-	err := svr.Run()
-
+	err = svr.Run()
 	if err != nil {
 		config.Logger.Error(err.Error())
+		panic(err)
 	}
 }

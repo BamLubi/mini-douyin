@@ -4,6 +4,7 @@ import (
 	"mini-douyin/cmd/api/kitex_gen/userdouyin/userservice"
 	config "mini-douyin/pkg/configs"
 	"mini-douyin/pkg/consts"
+	"strconv"
 
 	"github.com/cloudwego/kitex/client"
 )
@@ -11,7 +12,11 @@ import (
 var UserClient userservice.Client
 
 func initUser() {
-	c, err := userservice.NewClient(consts.UserServiceName, client.WithHostPorts("0.0.0.0:8888"))
+	ip, port, err := config.NacosSelectOneHealthyInstance(consts.UserServiceName)
+	if err != nil {
+		panic(err)
+	}
+	c, err := userservice.NewClient(consts.UserServiceName, client.WithHostPorts(ip+":"+strconv.Itoa(int(port))))
 	if err != nil {
 		panic(err)
 	}

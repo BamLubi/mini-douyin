@@ -19,3 +19,17 @@ services:
     restart: always
     ports:
       - 6379:6379
+  nacos:
+    image: nacos/nacos-server
+    container_name: mini-douyin-nacos
+    environment:
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+    restart:
+      on-failure
+    volumes:
+      - /opt/nacos/standalone-logs/:/home/nacos/logs
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
