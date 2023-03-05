@@ -68,14 +68,29 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *userdouyin.UserInfo
 
 // PublishList implements the UserServiceImpl interface.
 func (s *UserServiceImpl) PublishList(ctx context.Context, req *userdouyin.PublishListRequest) (resp *userdouyin.PublishListResponse, err error) {
-	var videoList []*entity.Video
+	var videoList []*entity.VideoInfo
 	err = config.DB.Table("videoinfo").Preload("User").Where("videoinfo.user_id = ?", req.UserId).Find(&videoList).Error
 	if err != nil {
 		err_msg := "PublishList DB error"
 		resp = &userdouyin.PublishListResponse{StatusCode: 1, StatusMsg: &err_msg}
 		return
 	}
-	videoListIDL := EntityVideList2IDLVideoList(videoList)
+	videoListIDL := EntityVideoList2IDLVideoList(videoList)
 	resp = &userdouyin.PublishListResponse{StatusCode: 0, VideoList: videoListIDL}
+	return
+}
+
+// FavoriteList implements the UserServiceImpl interface.
+func (s *UserServiceImpl) FavoriteList(ctx context.Context, req *userdouyin.FavoriteListRequest) (resp *userdouyin.FavoriteListResponse, err error) {
+	var favoriteList []*entity.Favorite
+
+	err = config.DB.Model(&favoriteList).Preload("Video").Where("user_id = ?", req.UserId).Find(&favoriteList).Error
+	if err != nil {
+		err_msg := "FavoriteList DB error"
+		resp = &userdouyin.FavoriteListResponse{StatusCode: 1, StatusMsg: &err_msg}
+		return
+	}
+	videoListIDL := EntityFavoriteList2IDLVideoList(favoriteList)
+	resp = &userdouyin.FavoriteListResponse{StatusCode: 0, VideoList: videoListIDL}
 	return
 }
