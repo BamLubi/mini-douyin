@@ -15,14 +15,14 @@ type VideoServiceImpl struct{}
 func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedRequest) (resp *videodouyin.FeedResponse, err error) {
 	// 最多 30 个视频，时间倒序，返回最小时间
 	// video.create_time < latestTime
-	var videoList []*entity.Video
+	var videoList []*entity.VideoInfo
 	err = config.DB.Table("videoinfo").Preload("User").Where("videoinfo.create_time < ?", req.LatestTime).Order("videoinfo.create_time DESC").Limit(30).Find(&videoList).Error
 	if err != nil {
 		err_msg := "Feed DB error"
 		resp = &videodouyin.FeedResponse{StatusCode: 1, StatusMsg: &err_msg}
 		return
 	}
-	videoListIDL := EntityVideList2IDLVideoList(videoList)
+	videoListIDL := EntityVideoList2IDLVideoList(videoList)
 	if len(videoListIDL) == 0 {
 		resp = &videodouyin.FeedResponse{StatusCode: 0}
 		return

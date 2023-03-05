@@ -22,7 +22,7 @@ func EntityUserInfo2IDLUser(userinfo *entity.UserInfo) (user *base.User) {
 	return
 }
 
-func EntityVideList2IDLVideoList(videoList []*entity.Video) []*base.Video {
+func EntityVideoList2IDLVideoList(videoList []*entity.VideoInfo) []*base.Video {
 	var videoListIDL []*base.Video
 	for _, video := range videoList {
 		videoIDL := &base.Video{
