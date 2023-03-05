@@ -15,6 +15,7 @@ type Client interface {
 	UserLogin(ctx context.Context, req *userdouyin.UserLoginRequest, callOptions ...callopt.Option) (r *userdouyin.UserLoginResponse, err error)
 	UserInfo(ctx context.Context, req *userdouyin.UserInfoRequest, callOptions ...callopt.Option) (r *userdouyin.UserInfoResponse, err error)
 	PublishList(ctx context.Context, req *userdouyin.PublishListRequest, callOptions ...callopt.Option) (r *userdouyin.PublishListResponse, err error)
+	FavoriteList(ctx context.Context, req *userdouyin.FavoriteListRequest, callOptions ...callopt.Option) (r *userdouyin.FavoriteListResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -64,4 +65,9 @@ func (p *kUserServiceClient) UserInfo(ctx context.Context, req *userdouyin.UserI
 func (p *kUserServiceClient) PublishList(ctx context.Context, req *userdouyin.PublishListRequest, callOptions ...callopt.Option) (r *userdouyin.PublishListResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.PublishList(ctx, req)
+}
+
+func (p *kUserServiceClient) FavoriteList(ctx context.Context, req *userdouyin.FavoriteListRequest, callOptions ...callopt.Option) (r *userdouyin.FavoriteListResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.FavoriteList(ctx, req)
 }

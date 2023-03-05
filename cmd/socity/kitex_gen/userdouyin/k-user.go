@@ -11,7 +11,7 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 
 	"github.com/cloudwego/kitex/pkg/protocol/bthrift"
-	"mini-douyin/cmd/api/kitex_gen/base"
+	"mini-douyin/cmd/socity/kitex_gen/base"
 )
 
 // unused protection

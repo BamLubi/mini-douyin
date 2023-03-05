@@ -5,7 +5,7 @@ include "base.thrift"
 struct FavoriteActionRequest {
     1:i64 user_id // 用户id
     2:i64 video_id // 视频id
-    3:bool action_type // 是否点赞，为0则取消点赞
+    3:i32 action_type // 1-点赞，2-取消点赞
 }
 
 struct FavoriteActionResponse {

@@ -6,7 +6,7 @@ import (
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"
-	userdouyin "mini-douyin/cmd/api/kitex_gen/userdouyin"
+	userdouyin "mini-douyin/cmd/socity/kitex_gen/userdouyin"
 )
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.

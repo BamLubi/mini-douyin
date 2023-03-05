@@ -23,6 +23,7 @@ func NewServiceInfo() *kitex.ServiceInfo {
 		"UserLogin":    kitex.NewMethodInfo(userLoginHandler, newUserServiceUserLoginArgs, newUserServiceUserLoginResult, false),
 		"UserInfo":     kitex.NewMethodInfo(userInfoHandler, newUserServiceUserInfoArgs, newUserServiceUserInfoResult, false),
 		"PublishList":  kitex.NewMethodInfo(publishListHandler, newUserServicePublishListArgs, newUserServicePublishListResult, false),
+		"FavoriteList": kitex.NewMethodInfo(favoriteListHandler, newUserServiceFavoriteListArgs, newUserServiceFavoriteListResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "userdouyin",
@@ -110,6 +111,24 @@ func newUserServicePublishListResult() interface{} {
 	return userdouyin.NewUserServicePublishListResult()
 }
 
+func favoriteListHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*userdouyin.UserServiceFavoriteListArgs)
+	realResult := result.(*userdouyin.UserServiceFavoriteListResult)
+	success, err := handler.(userdouyin.UserService).FavoriteList(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newUserServiceFavoriteListArgs() interface{} {
+	return userdouyin.NewUserServiceFavoriteListArgs()
+}
+
+func newUserServiceFavoriteListResult() interface{} {
+	return userdouyin.NewUserServiceFavoriteListResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -155,6 +174,16 @@ func (p *kClient) PublishList(ctx context.Context, req *userdouyin.PublishListRe
 	_args.Req = req
 	var _result userdouyin.UserServicePublishListResult
 	if err = p.c.Call(ctx, "PublishList", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) FavoriteList(ctx context.Context, req *userdouyin.FavoriteListRequest) (r *userdouyin.FavoriteListResponse, err error) {
+	var _args userdouyin.UserServiceFavoriteListArgs
+	_args.Req = req
+	var _result userdouyin.UserServiceFavoriteListResult
+	if err = p.c.Call(ctx, "FavoriteList", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
