@@ -53,7 +53,6 @@ func UserInfo(c *gin.Context) {
 	resp, err := rpc.UserClient.UserInfo(context.Background(), req)
 	if err != nil {
 		config.Logger.Error(err.Error())
-		return
 	}
 	c.JSON(200, resp)
 }
@@ -70,7 +69,22 @@ func PublishList(c *gin.Context) {
 	resp, err := rpc.UserClient.PublishList(context.Background(), req)
 	if err != nil {
 		config.Logger.Error(err.Error())
+	}
+	c.JSON(200, resp)
+}
+
+func FavoriteList(c *gin.Context) {
+	id, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	// 校验id与token解析id是否一致
+	if err := middleware.CheckUserId2TokenString(id, c.Query("token")); err != nil {
+		config.Logger.Error(err.Error())
+		c.JSON(400, &userdouyin.FavoriteListResponse{StatusCode: 1})
 		return
+	}
+	req := &userdouyin.FavoriteListRequest{UserId: id}
+	resp, err := rpc.UserClient.FavoriteList(context.Background(), req)
+	if err != nil {
+		config.Logger.Error(err.Error())
 	}
 	c.JSON(200, resp)
 }
