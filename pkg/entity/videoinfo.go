@@ -10,6 +10,8 @@ type VideoInfo struct {
 	IsFavorite    bool   `gorm:"default:0" json:"is_favorite"`    // true-已点赞，false-未点赞
 	Title         string `json:"title"`                           // 标题
 	CreateTime    int64  `json:"create_time"`                     // 创建时间
+
+	User UserInfo `json:"author" gorm:"foreignKey:Id;references:UserId;"` // 作者
 }
 
 func (vi VideoInfo) TableName() string {
