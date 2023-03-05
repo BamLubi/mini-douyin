@@ -26,12 +26,12 @@ func initDB() {
 		ShardingKey:    "user_id",
 		NumberOfShards: sharedCount,
 		// PrimaryKeyGenerator: sharding.PKSnowflake,
-	}, "relations"))
-	DB.Use(sharding.Register(sharding.Config{
-		ShardingKey:    "user_id",
-		NumberOfShards: sharedCount,
-		// PrimaryKeyGenerator: sharding.PKSnowflake,
-	}, "relations"))
+	}, "favorites"))
+	// DB.Use(sharding.Register(sharding.Config{
+	// 	ShardingKey:    "user_id",
+	// 	NumberOfShards: sharedCount,
+	// 	// PrimaryKeyGenerator: sharding.PKSnowflake,
+	// }, "comments"))
 
 	Logger.Info("Mysql Connect and Init Shared Table Success.")
 }
@@ -39,22 +39,24 @@ func initDB() {
 func initSharedTable(num int) {
 	// relations表
 	for i := 0; i < num; i++ {
-		table := fmt.Sprintf("%s_%d", "relations", i)
+		table := fmt.Sprintf("%s_%d", "favorites", i)
 		DB.Exec(`CREATE TABLE IF NOT EXISTS ` + table + ` (
 			id bigint PRIMARY KEY,
 			user_id bigint,
-			target_id bigint,
-			is_active int(1)
+			video_id bigint,
+			action_type int
 		)`)
 	}
-	// comments表
-	for i := 0; i < num; i++ {
-		table := fmt.Sprintf("%s_%d", "comments", i)
-		DB.Exec(`CREATE TABLE IF NOT EXISTS ` + table + ` (
-			id bigint PRIMARY KEY,
-			user_id bigint,
-			content varchar,
-			create_date varchar
-		)`)
-	}
+	// // comments表
+	// for i := 0; i < num; i++ {
+	// 	table := fmt.Sprintf("%s_%d", "comments", i)
+	// 	DB.Exec(`CREATE TABLE IF NOT EXISTS ` + table + ` (
+	// 		id bigint PRIMARY KEY,
+	// 		user_id bigint,
+	// 		video_id bigint,
+	// 		content varchar(255),
+	// 		create_date varchar(255),
+	// 		active int
+	// 	)`)
+	// }
 }
