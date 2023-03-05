@@ -1,8 +1,9 @@
 package consts
 
 const (
-	SecretKey   = "mini-douyin"
-	IdentityKey = "id"
-	UserServiceName = "userservice"
-	VideoServiceName = "videoservice"
+	SecretKey         = "mini-douyin"
+	IdentityKey       = "id"
+	UserServiceName   = "userservice"
+	VideoServiceName  = "videoservice"
+	SocityServiceName = "socityservice"
 )
