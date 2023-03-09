@@ -42,8 +42,8 @@ cmd/video/script
 cmd/video/build.sh
 
 
-cmd/scoity/output
-cmd/scoity/kitex_gen
-cmd/scoity/script
-cmd/scoity/build.sh
+cmd/socity/output
+cmd/socity/kitex_gen
+cmd/socity/script
+cmd/socity/build.sh
 

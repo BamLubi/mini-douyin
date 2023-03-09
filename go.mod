@@ -2,11 +2,17 @@ module mini-douyin
 
 go 1.19
 
-require github.com/gin-gonic/gin v1.9.0
+require (
+	github.com/apache/thrift v0.13.0
+	github.com/gin-gonic/gin v1.9.0
+	github.com/nacos-group/nacos-sdk-go/v2 v2.1.3
+	gorm.io/driver/mysql v1.4.7
+	gorm.io/gorm v1.24.5
+	gorm.io/sharding v0.5.2
+)
 
 require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1704 // indirect
-	github.com/apache/thrift v0.13.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
@@ -18,11 +24,8 @@ require (
 	github.com/cloudwego/frugal v0.1.3 // indirect
 	github.com/cloudwego/netpoll v0.3.1 // indirect
 	github.com/cloudwego/thriftgo v0.2.4 // indirect
-	github.com/coreos/go-semver v0.3.0 // indirect
-	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -35,7 +38,6 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/longbridgeapp/sqlparser v0.3.1 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/nacos-group/nacos-sdk-go/v2 v2.1.3 // indirect
 	github.com/oleiade/lane v1.0.1 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -49,8 +51,6 @@ require (
 	github.com/tidwall/gjson v1.14.3 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
-	go.etcd.io/etcd/api/v3 v3.5.7 // indirect
-	go.etcd.io/etcd/client/pkg/v3 v3.5.7 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
@@ -59,9 +59,6 @@ require (
 	google.golang.org/grpc v1.48.0 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	gorm.io/driver/mysql v1.4.7 // indirect
-	gorm.io/gorm v1.24.5 // indirect
-	gorm.io/sharding v0.5.2 // indirect
 )
 
 require (
@@ -70,8 +67,7 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.9.1
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/cloudwego/kitex v0.4.4 // indirect
-	github.com/garyburd/redigo v1.6.4
+	github.com/cloudwego/kitex v0.4.4
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
@@ -88,7 +84,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.9 // indirect
-	go.etcd.io/etcd/client/v3 v3.5.7
 	go.uber.org/zap v1.24.0
 	golang.org/x/arch v0.0.0-20220722155209-00200b7164a7 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
