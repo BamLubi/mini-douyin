@@ -13,6 +13,9 @@ func Init() {
 	config.InitConfigs("/root/mini-douyin/logs/api.log", "debug")
 	rpc.InitRPC()
 	middleware.InitJWT()
+
+	// 监听redis
+	config.InitPubSub()
 }
 
 func main() {
