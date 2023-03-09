@@ -20,6 +20,7 @@ require (
 	github.com/cloudwego/thriftgo v0.2.4 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
+	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
@@ -31,15 +32,20 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/longbridgeapp/sqlparser v0.3.1 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/nacos-group/nacos-sdk-go/v2 v2.1.3 // indirect
 	github.com/oleiade/lane v1.0.1 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/sirupsen/logrus v1.6.0 // indirect
+	github.com/stathat/consistent v1.0.0 // indirect
 	github.com/tidwall/gjson v1.14.3 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
@@ -60,6 +66,7 @@ require (
 
 require (
 	github.com/GUAIK-ORG/go-snowflake v0.0.0-20200116064823-220c4260e85f
+	github.com/apache/rocketmq-client-go/v2 v2.1.1
 	github.com/appleboy/gin-jwt/v2 v2.9.1
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect

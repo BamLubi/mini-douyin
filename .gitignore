@@ -26,3 +26,24 @@ tmp/
 
 *.mp4
 *.jpg
+
+logs/*
+
+cmd/api/kitex_gen
+
+cmd/user/output
+cmd/user/kitex_gen
+cmd/user/script
+cmd/user/build.sh
+
+cmd/video/output
+cmd/video/kitex_gen
+cmd/video/script
+cmd/video/build.sh
+
+
+cmd/scoity/output
+cmd/scoity/kitex_gen
+cmd/scoity/script
+cmd/scoity/build.sh
+

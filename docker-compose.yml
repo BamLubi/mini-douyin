@@ -39,6 +39,50 @@ services:
       - "9848:9848"
       - "9849:9849"
   
+  # RocketMQ
+  rmqnamesrv:
+    image: rocketmqinc/rocketmq:4.4.0
+    container_name: mini-douyin-rmqnamesrv
+    environment:
+      - MAX_POSSIBLE_HEAP=100000000
+    volumes:
+      - /root/mq/data/namesrv/logs:/root/logs
+      - /root/mq/data/namesrv/store:/root/store
+    command: sh mqnamesrv
+    ports:
+      - 9876:9876
+    restart:
+      on-failure
+  rmqbroker:
+    image: rocketmqinc/rocketmq:4.4.0
+    container_name: mini-douyin-rmqbroker
+    environment:
+      - NAMESRV_ADDR=rmqnamesrv:9876
+      - MAX_POSSIBLE_HEAP=200000000
+    volumes:
+      - /root/mq/data/broker/logs:/root/logs
+      - /root/mq/rocketmq/data/broker/store:/root/store
+      - ./broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-4.4.0/conf/broker.conf
+    ports:
+      - 10909:10909
+      - 10911:10911
+    depends_on:
+      - rmqnamesrv
+    restart:
+      on-failure
+  rmqconsole:
+    image: styletang/rocketmq-console-ng
+    container_name: mini-douyin-rmqconsole
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rmqnamesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    ports:
+      - 8080:8080
+    depends_on:
+      - rmqnamesrv
+    restart:
+      on-failure
+
   # Grafana
   grafana:
     image: grafana/grafana:latest
@@ -49,3 +93,5 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
       - "3000:3000"
+    restart:
+      on-failure
