@@ -14,11 +14,6 @@ import (
 
 // 用户注册
 func UserRegister(c *gin.Context) {
-	// var req userdouyin.UserRegisterRequest
-	// if err := c.Bind(&req); err != nil {
-	// 	log.Println(err)
-	// 	return
-	// }
 	// 获取参数，参数为 Param 格式
 	req := &userdouyin.UserRegisterRequest{Username: c.Query("username"), Password: c.Query("password")}
 	// 调用RPC执行用户注册，返回用户的id即可

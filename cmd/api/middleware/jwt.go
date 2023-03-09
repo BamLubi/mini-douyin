@@ -28,10 +28,6 @@ func InitJWT() {
 			return int64(claims[consts.IdentityKey].(float64))
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			// var req userdouyin.UserLoginRequest
-			// if err := c.ShouldBind(&req); err != nil {
-			// 	return "", jwt.ErrMissingLoginValues
-			// }
 			// 获取参数，参数为 Param 格式
 			req := &userdouyin.UserLoginRequest{Username: c.Query("username"), Password: c.Query("password")}
 			if len(req.Username) == 0 || len(req.Password) == 0 {
