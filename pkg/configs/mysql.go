@@ -10,7 +10,7 @@ import (
 
 var DB *gorm.DB
 
-func initDB() {
+func InitDB() {
 	var err error
 	dsn := "root:mini-douyin@tcp(127.0.0.1:3306)/mini_douyin?charset=utf8mb4&parseTime=True&loc=Local"
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -37,7 +37,7 @@ func initDB() {
 }
 
 func initSharedTable(num int) {
-	// relations表
+	// favorites表
 	for i := 0; i < num; i++ {
 		table := fmt.Sprintf("%s_%d", "favorites", i)
 		DB.Exec(`CREATE TABLE IF NOT EXISTS ` + table + ` (
