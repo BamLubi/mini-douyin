@@ -12,6 +12,20 @@ import (
 // VideoServiceImpl implements the last service interface defined in the IDL.
 type VideoServiceImpl struct{}
 
+func Iface2str(data interface{}) string {
+	str := ""
+	if v, ok := data.([]uint8); ok {
+		for _, n := range v {
+			str += string(n)
+		}
+	} else if v, ok := data.([]int64); ok {
+		for _, n := range v {
+			str += strconv.Itoa(int(n))
+		}
+	}
+	return str
+}
+
 // Feed implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedRequest) (resp *videodouyin.FeedResponse, err error) {
 	// 最多 30 个视频，时间倒序，返回最小时间
@@ -31,11 +45,8 @@ func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedReques
 	// 查询redis是否需要更新统计信息
 	// 如果redis中有，则添加入返回值
 	// 如果没有，则从mysql插入redis
-	config.Logger.Debug("运行到这，获取redis")
 	for i := 0; i < len(videoListIDL); i++ {
 		videoId := strconv.Itoa(int(videoListIDL[i].Id))
-		config.Logger.Debug("vide id" + videoId)
-
 		config.RD.Send("SELECT", 10)
 		config.RD.Send("HGET", "video_"+videoId, "favorite_count")
 		config.RD.Send("HGET", "video_"+videoId, "comment_count")
@@ -47,12 +58,7 @@ func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedReques
 			config.RD.Send("HSET", "video_"+videoId, "favorite_count", videoListIDL[i].FavoriteCount)
 			config.RD.Flush()
 		} else {
-			str := ""
-			for _, n := range v.([]uint8) {
-				str += string(n)
-			}
-			config.Logger.Debug("favorite_count " + str)
-			videoListIDL[i].FavoriteCount, _ = strconv.ParseInt(str, 10, 64)
+			videoListIDL[i].FavoriteCount, _ = strconv.ParseInt(Iface2str(v), 10, 64)
 		}
 		v, _ = config.RD.Receive()
 		if v == nil {
@@ -60,12 +66,33 @@ func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedReques
 			config.RD.Do("HSET", "video_"+videoId, "comment_count", videoListIDL[i].CommentCount)
 			config.RD.Flush()
 		} else {
-			str := ""
-			for _, n := range v.([]uint8) {
-				str += string(n)
+			videoListIDL[i].CommentCount, _ = strconv.ParseInt(Iface2str(v), 10, 64)
+		}
+		// 检查当前用户是否喜欢
+		if req.UserId != nil {
+			userIdStr := strconv.Itoa(int(*req.UserId))
+			config.RD.Send("SELECT", 10)
+			config.RD.Send("HGET", "user_favorite_"+userIdStr, videoId)
+			config.RD.Flush()
+			v, _ = config.RD.Receive()
+			v, _ = config.RD.Receive()
+			if v == nil {
+				// 从数据库中查找，如果点赞则写入redis
+				var favorite entity.Favorite
+				err = config.DB.Raw("SELECT * FROM favorites WHERE user_id = ? AND video_id = ?", userIdStr, videoId).Scan(&favorite).Error
+				if err == nil && favorite.ActionType == 1 {
+					videoListIDL[i].IsFavorite = true
+					config.RD.Send("SELECT", 10)
+					config.RD.Send("HSET", "user_favorite_"+userIdStr, videoId, 1)
+					config.RD.Flush()
+				}
+			} else {
+				if Iface2str(v) == "1" {
+					videoListIDL[i].IsFavorite = true
+				} else {
+					videoListIDL[i].IsFavorite = false
+				}
 			}
-			config.Logger.Debug("comment_count " + str)
-			videoListIDL[i].CommentCount, _ = strconv.ParseInt(str, 10, 64)
 		}
 	}
 

@@ -80,6 +80,12 @@ func (s *SocityServiceImpl) CommentAction(ctx context.Context, req *socitydouyin
 			resp = &socitydouyin.CommentActionResponse{StatusCode: 1, StatusMsg: &err_msg}
 			return
 		}
+		// redis更新视频的评论数量
+		config.RD.Send("SELECT", 10)
+		config.RD.Send("HINCRBY", "video_"+strconv.Itoa(int(req.VideoId)), "comment_count", 1)
+		config.RD.Send("SET", "video_ex_"+strconv.Itoa(int(req.VideoId)), "expire", "EX", 30)
+		config.RD.Flush()
+
 		// 调用rpc获取当前用户信息
 		userInfoReq := &userdouyin.UserInfoRequest{UserId: req.UserId}
 		var userInfoResq *userdouyin.UserInfoResponse
@@ -101,6 +107,11 @@ func (s *SocityServiceImpl) CommentAction(ctx context.Context, req *socitydouyin
 			resp = &socitydouyin.CommentActionResponse{StatusCode: 1, StatusMsg: &err_msg}
 			return
 		}
+		// redis更新视频的评论数量
+		config.RD.Send("SELECT", 10)
+		config.RD.Send("HINCRBY", "video_"+strconv.Itoa(int(req.VideoId)), "comment_count", -1)
+		config.RD.Send("SET", "video_ex_"+strconv.Itoa(int(req.VideoId)), "expire", "EX", 30)
+		config.RD.Flush()
 		resp = &socitydouyin.CommentActionResponse{StatusCode: 0}
 		return
 	}

@@ -42,6 +42,13 @@ func PubSubCallbackController(pattern string, channel string, message string) er
 		if err != nil {
 			Logger.Error(err.Error())
 		}
+	} else if msgs[0] == "video" && msgs[1] == "ex" {
+		videoId := msgs[2]
+		// 将视频id等信息发送给消息队列，更新视频的统计信息
+		err := SendSyncMessage("mini-douyin-video", videoId)
+		if err != nil {
+			Logger.Error(err.Error())
+		}
 	}
 	return nil
 }

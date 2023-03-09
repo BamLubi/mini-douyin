@@ -15,45 +15,20 @@ import (
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 )
 
-var MQC rocketmq.PushConsumer
-
 func Init() {
 	config.InitLoggerOnly("/root/mini-douyin/logs/consumer.log", "debug")
 	config.InitDB()
 	config.InitRedis()
 }
 
-func initMQConsumer() {
-	// 订阅主题、消费
-	endPoint := []string{consts.MQEndPoint}
-	// 创建一个consumer实例
-	c, err := rocketmq.NewPushConsumer(consumer.WithNameServer(endPoint),
-		consumer.WithConsumerModel(consumer.Clustering),
-		consumer.WithGroupName("mini-douyin"),
-	)
-	if err != nil {
-		panic(err)
-	}
-	MQC = c
-}
-
 func main() {
 	// 初始化
 	Init()
-	// 初始化消费者
-	initMQConsumer()
-	// 订阅消息
-	SubcribeMessage()
-	// 启动消费
-	// 启动consumer
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Printf("consumer start error: %s\n", err.(error))
-		}
-		MQC.Shutdown()
-	}()
-	MQC.Start()
-	MQC.Resume()
+
+	// 订阅用户点赞消息
+	go SubcribeUserFavorite()
+	// 订阅视频信息
+	go SubcribeVideo()
 
 	for {
 		time.Sleep(time.Second)
@@ -72,9 +47,20 @@ func convertISlice2StringSlice(ifaceSlice []interface{}) []string {
 	return stringSlice
 }
 
-func SubcribeMessage() {
+func SubcribeUserFavorite() {
+	var err error
+	// 订阅主题、消费
+	endPoint := []string{consts.MQEndPoint}
+	// 创建一个consumer实例
+	c, err := rocketmq.NewPushConsumer(consumer.WithNameServer(endPoint),
+		consumer.WithConsumerModel(consumer.Clustering),
+		consumer.WithGroupName("mini-douyin-user-favorite"),
+	)
+	if err != nil {
+		panic(err)
+	}
 	// 订阅用户点赞视频信息，读取redis，然后写入数据库
-	err := MQC.Subscribe("mini-douyin-user-favorite", consumer.MessageSelector{}, func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
+	err = c.Subscribe("mini-douyin-user-favorite", consumer.MessageSelector{}, func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
 		var wg sync.WaitGroup
 		for i := range msgs {
 			wg.Add(1)
@@ -86,9 +72,62 @@ func SubcribeMessage() {
 		wg.Wait()
 		return consumer.ConsumeSuccess, nil
 	})
-
 	if err != nil {
 		panic(err)
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("consumer start error: %s\n", err.(error))
+		}
+		c.Shutdown()
+	}()
+	c.Start()
+	c.Resume()
+
+	for {
+		time.Sleep(time.Second)
+	}
+}
+
+func SubcribeVideo() {
+	var err error
+	// 订阅主题、消费
+	endPoint := []string{consts.MQEndPoint}
+	// 创建一个consumer实例
+	c, err := rocketmq.NewPushConsumer(consumer.WithNameServer(endPoint),
+		consumer.WithConsumerModel(consumer.Clustering),
+		consumer.WithGroupName("mini-douyin-video"),
+	)
+	if err != nil {
+		panic(err)
+	}
+	// 订阅用户点赞视频信息，读取redis，然后写入数据库
+	err = c.Subscribe("mini-douyin-video", consumer.MessageSelector{}, func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
+		var wg sync.WaitGroup
+		for i := range msgs {
+			wg.Add(1)
+			go func(videoId string) {
+				defer wg.Done()
+				VideoInfoChange(videoId)
+			}(string(msgs[i].Body))
+		}
+		wg.Wait()
+		return consumer.ConsumeSuccess, nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("consumer start error: %s\n", err.(error))
+		}
+		c.Shutdown()
+	}()
+	c.Start()
+	c.Resume()
+
+	for {
+		time.Sleep(time.Second)
 	}
 }
 
@@ -158,4 +197,39 @@ func UserFavorite(userId string) {
 		}
 	}
 	tx.Commit()
+}
+
+func VideoInfoChange(videoId string) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("VideoInfoChange Error", err)
+		}
+	}()
+	var err error
+	// 1. 读取video的统计信息
+	config.RD.Send("SELECT", 10)
+	config.RD.Send("HGETALL", "video_"+videoId)
+	config.RD.Flush()
+	if _, err = config.RD.Receive(); err != nil {
+		panic(err)
+	}
+	v, err := config.RD.Receive()
+	if err != nil {
+		panic(err)
+	}
+	stringSlice := convertISlice2StringSlice(v.([]interface{}))
+	favoriteCount, _ := strconv.Atoi(stringSlice[1])
+	commentCount, _ := strconv.Atoi(stringSlice[3])
+
+	// 2. 创建视频实体
+	id, _ := strconv.ParseInt(videoId, 10, 64)
+	videoInfo := &entity.VideoInfo{Id: id, FavoriteCount: int64(favoriteCount), CommentCount: int64(commentCount)}
+	config.Logger.Info("VideoId : " + videoId + " favoriteCount : " + stringSlice[1] + " commentCount : " + stringSlice[3])
+
+	// 3. 更新数据库
+	err = config.DB.Exec("UPDATE videoinfo SET favorite_count = ?, comment_count = ? where id = ?", videoInfo.FavoriteCount, videoInfo.CommentCount, videoInfo.Id).Error
+	// err = config.DB.Save(&videoInfo).Error
+	if err != nil {
+		panic(err)
+	}
 }
