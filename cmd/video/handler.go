@@ -53,18 +53,24 @@ func (s *VideoServiceImpl) Feed(ctx context.Context, req *videodouyin.FeedReques
 		config.RD.Flush()
 		v, _ := config.RD.Receive()
 		v, _ = config.RD.Receive()
+		// 点赞信息是否命中，命中使用缓存，不命中将数据库信息写入redis
 		if v == nil {
-			config.RD.Send("SELECT", 10)
-			config.RD.Send("HSET", "video_"+videoId, "favorite_count", videoListIDL[i].FavoriteCount)
-			config.RD.Flush()
+			go func ()  {
+				config.RD.Send("SELECT", 10)
+				config.RD.Send("HSET", "video_"+videoId, "favorite_count", videoListIDL[i].FavoriteCount)
+				config.RD.Flush()
+			}()
 		} else {
 			videoListIDL[i].FavoriteCount, _ = strconv.ParseInt(Iface2str(v), 10, 64)
 		}
+		// 评论信息是否命中
 		v, _ = config.RD.Receive()
 		if v == nil {
-			config.RD.Send("SELECT", 10)
-			config.RD.Do("HSET", "video_"+videoId, "comment_count", videoListIDL[i].CommentCount)
-			config.RD.Flush()
+			go func ()  {
+				config.RD.Send("SELECT", 10)
+				config.RD.Do("HSET", "video_"+videoId, "comment_count", videoListIDL[i].CommentCount)
+				config.RD.Flush()
+			}()
 		} else {
 			videoListIDL[i].CommentCount, _ = strconv.ParseInt(Iface2str(v), 10, 64)
 		}
