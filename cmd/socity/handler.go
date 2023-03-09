@@ -23,8 +23,7 @@ func (s *SocityServiceImpl) FavoriteAction(ctx context.Context, req *socitydouyi
 	// TODO：使用redis优化时在考虑
 	// 1. 将点赞数据先存储在redis中，用hashtable存储
 	// 2. 监听redis过期，写入数据库
-	randSecond := 1*60*60 + rand.Intn(30*60)
-	randSecond = 10 // 测试用
+	randSecond := 30*60 + rand.Intn(10*60)
 	config.RD.Send("SELECT", 10)
 	config.RD.Send("SET", "user_favorite_ex_"+strconv.Itoa(int(req.UserId)), "expire", "EX", randSecond)
 	config.Logger.Info("user_favorite_ex_" + strconv.Itoa(int(req.UserId)))
@@ -34,7 +33,7 @@ func (s *SocityServiceImpl) FavoriteAction(ctx context.Context, req *socitydouyi
 	} else {
 		config.RD.Send("HINCRBY", "video_"+strconv.Itoa(int(req.VideoId)), "favorite_count", -1)
 	}
-	config.RD.Send("SET", "video_ex_"+strconv.Itoa(int(req.VideoId)), "expire", "EX", 30)
+	config.RD.Send("SET", "video_ex_"+strconv.Itoa(int(req.VideoId)), "expire", "EX", randSecond)
 	config.RD.Flush()
 
 	defer func() {
